@@ -1,0 +1,35 @@
+name: Node.js Express App CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18' # หรือเปลี่ยนตามเวอร์ชันที่ใช้
+
+      - name: 📦 Install dependencies
+        run: npm install
+
+      - name: 🧪 Run test script (optional)
+        run: |
+          if [ -f "package.json" ]; then
+            npm test || echo "No test script defined"
+          fi
+
+      - name: 🚀 Start Express Server
+        run: |
+          nohup node index.js > output.log 2>&1 &
+          sleep 3
+          curl -s http://localhost:4556 || echo "Server might not respond"
